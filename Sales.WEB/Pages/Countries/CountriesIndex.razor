@@ -1,0 +1,46 @@
+﻿@page "/countries"
+@inject IRepository repository
+
+<h3>Países</h3>
+
+@if (Countries is null)
+{
+    <div class="spinner" />
+}
+else
+{
+    <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false"
+                FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true"
+                PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                Data="@Countries" TItem="Country" ColumnWidth="200px" LogicalFilterOperator="LogicalFilterOperator.Or"
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive">
+        <Columns>
+            <RadzenDataGridColumn TItem="Country" Property="Name" Title="País" />
+            <RadzenDataGridColumn TItem="Country" Title="Edit">
+                <Template Context="data">
+                    <RadzenLink Icon="edit" Path="@($"/contactdetails/{data.Id}")" Text="Edit"></RadzenLink>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Width="200px" TItem="Country" Title="Delete">
+                <Template Context="data">
+                    <RadzenLink Icon="delete"  Path="@($"/contactdelete/{data.Id}")" Text="Delete"></RadzenLink>
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+
+    </RadzenDataGrid>
+
+}
+@code {
+    public List<Country>? Countries { get; set; }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var responseHttp = await repository.Get<List<Country>>("/api/Countries");
+        Countries = responseHttp.Response;
+    }
+
+
+}
